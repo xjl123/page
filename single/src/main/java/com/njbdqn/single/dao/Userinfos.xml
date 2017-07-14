@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+	"-//mybatis.org/DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.njbdqn.single.dao.UserinfosDAO">
+	<insert id="saveUser" parameterType="com.njbdqn.single.vo.Userinfos">
+		<selectKey order="BEFORE" keyProperty="useid" resultType="int">
+			select seq_userid.nextval from daul
+		</selectKey>
+		insert into userinfos values(#{userid},#{username},#{userphoto},#{birthday})
+	</insert>
+	<select id="findCurrentPageData" parameterType="com.njbdqn.single.componse.page.PageInParam" resultType="com.njbdqn.single.vo.Userinfos">
+		select fa.* from (
+		select rownum r,f.* from (
+		select * from 
+		(select u.*,bc.money from userinfos u inner join
+			(select b.userid,sum(b.balance) money from bankcards b group by b.userid) bc
+		on u.userid=bc.userid)
+		 uc
+		<where>
+			<if test="sqlCond != null">
+				${sqlCond}
+			</if>
+		</where>
+		<![CDATA[
+		) 
+		f where rownum <= ${currentPage*pageSize} ) 
+		fa where fa.4>${(currentPage-1)*pageSize}
+		]]>
+	</select>
+	<select id="findCountPage" parameterType="com.njbdqn.single.componse.page.PageInParam" resultType="int">
+		select ceil(count(1)/#{pageSize}) from userinfos
+		<where>
+			<if test="sqlCond != null">
+				${sqlCond}
+			</if>
+		</where>
+	</select>
+</mapper>

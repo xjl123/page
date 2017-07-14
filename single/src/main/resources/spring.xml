@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:cache="http://www.springframework.org/schema/cache" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+     http://www.springframework.org/schema/beans/spring-beans.xsd
+     http://www.springframework.org/schema/aop
+     http://www.springframework.org/schema/aop/spring-aop.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context.xsd
+     http://www.springframework.org/schema/mvc
+     http://www.springframework.org/schema/mvc/spring-mvc.xsd
+     http://www.springframework.org/schema/tx
+     http://www.springframework.org/schema/tx/spring-tx.xsd">
+     <context:annotation-config></context:annotation-config>
+     <context:component-scan base-package="com.njbdqn.single"></context:component-scan>
+     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+     	<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"></property>
+     	<property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521:orcl"></property>
+     	<property name="username" value="cm"></property>
+     	<property name="password" value="cm"></property>
+     	<property name="initialSize" value="3"></property>
+     	<property name="maxActive" value="50"></property>
+     	<property name="minIdle" value="5"></property>
+     	<property name="maxWait" value="10000"></property>
+     	<property name="validationQuery" value="select 1 from dual"></property>
+     </bean>
+     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+     	<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"></property>
+     	<property name="prefix" value="/"></property>
+     	<property name="suffix" value=".jsp"></property>
+     </bean>
+     
+     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+     	<property name="dataSource" ref="dataSource"></property>
+     </bean>
+     <tx:annotation-driven transaction-manager="transactionManager"/>
+     <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+     	<property name="dataSource" ref="dataSource"></property>
+     	<property name="mapperLocations" value="classpath*:com/njbdqn/single/dao/*.xml"></property>
+     </bean>
+     <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+     	<property name="basePackage" value="com.njbdqn.single.dao"></property>
+     </bean>
+     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"></bean>
+</beans>
